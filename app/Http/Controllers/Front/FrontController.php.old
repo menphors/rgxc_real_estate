@@ -1,0 +1,277 @@
+<?php
+
+namespace App\Http\Controllers\Front;
+
+use Mail;
+use App\Model\Cms;
+use App\Model\Property\Property;
+use App\Model\PropertyType;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Model\Province\Province;
+use App\Model\District\District;
+use App\Model\Staff\Staff;
+use App\Model\User\User;
+use App\Model\Config;
+
+
+class FrontController extends Controller
+{
+    public function index(){
+        $provinces = Province::get();
+        $properties = Property::with([
+            "province_id",
+            "district_id",
+            "commune_id",
+            "village_id"
+        ])
+        ->where('status', \Constants::PROPERTY_STATUS["published"])
+        ->where("state", '=', 1)
+        ->where("is_home", '=', 1)
+        ->orderBy("id", "DESC")
+        ->paginate(6);
+        $property_types = PropertyType::all();
+
+        $is_filter = [
+            'province_id' => '',
+            'district_id' => '',
+            'listing_type' => '',
+            'property_type' => '',
+            'bedroom' => '',
+            'bathroom' => '',
+        ];
+
+        $agents = Staff::where("type", \Constants::ROLE_KEY_SALE)->orderBy("id", "DESC")->limit(10)->get();
+
+        // get slide show
+        $slide = Cms::where(["type" => \Constants::CMS_TYPE_SLIDE_SHOW])->orderBy("id", "desc")->get();
+        $home_page_widget = Cms::where(["type" => \Constants::CMS_TYPE_WIDGET, "blog" => 1])
+            ->orderBy("id", "desc")
+            ->first();
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+        return view('front.home', compact(
+            'properties',
+            'provinces',
+            "property_types",
+            'is_filter',
+            'agents',
+            "slide",
+            "carousel",
+            "home_page_widget"
+        ));
+    }
+
+
+    public function properties(Request $request){
+
+        $price_from = $request->get("min_price", 0);
+        $price_to = $request->get("max_price", 0);
+        $province_id = !empty($request->input('province')) ? $request->input('province') : '';
+        $district_id = !empty($request->input('district')) ? $request->input('district') : '';
+        $listing_type = !empty($request->input('listing_type')) ? $request->input('listing_type') : '';
+        $property_type = !empty($request->input('property_type')) ? $request->input('property_type') : '';
+        $bedroom = !empty($request->input('bedroom')) ? $request->input('bedroom') : '';
+        $bathroom = !empty($request->input('bathroom')) ? $request->input('bathroom') : '';
+        $propery_key = !empty($request->input('property_key')) ? $request->input('property_key') : '';
+
+        $is_filter = [
+            'province_id' => $province_id,
+            'district_id' => $district_id,
+            'listing_type' => $listing_type,
+            'property_type' => $property_type,
+            'bedroom' => $bedroom,
+            'bathroom' => $bathroom,
+        ];
+
+        $provinces = Province::get();
+        $districts = District::where('province_id', $province_id)->get();
+        $limit = $request->get('limit', 15);
+        $properties = Property::with([
+            "province_id",
+            "district_id",
+            "commune_id",
+            "village_id"
+        ])
+        ->where('status', \Constants::PROPERTY_STATUS["published"])
+        ->where("state", '=', 1)
+        ->where(function($query) use ($price_from, $price_to, $province_id, $district_id, $listing_type, $property_type, $bedroom, $bathroom, $propery_key){
+            if(!empty($province_id)){
+                $query->where('province_id', $province_id);
+            }
+            if(!empty($district_id)){
+                $query->where('district_id', $district_id);
+            }
+            if(!empty($listing_type)){
+                $query->where('listing_type', $listing_type);
+            }
+            if(!empty($property_type)){
+                $query->where('property_type_id', $property_type);
+            }
+            if(!empty($bedroom)){
+                $query->where('bed_room', $bedroom);
+            }
+            if(!empty($bathroom)){
+                $query->where('bath_room', $bathroom);
+            }
+            if(!empty($price_from) && !empty($price_to)){
+                $query->whereBetween('price', [$price_from, $price_to]);
+            }
+        });
+
+        if(empty($bathroom)
+            && empty($price_from)
+            && empty($price_to)
+            && empty($bedroom)
+            && empty($property_type)
+            && empty($listing_type)
+            && empty($district_id)
+            && empty($property_id)){
+            $properties->where("is_home", '=', 1);
+        }
+        $properties = $properties->orderBy("id", "desc")
+        ->paginate($limit);
+        $property_types = PropertyType::all();
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+
+        return view('front.properties', compact(
+            'properties',
+            'provinces',
+            'districts',
+            "property_types",
+            'is_filter',
+            'carousel'
+        ));
+    }
+
+
+    public function agents(Request $request){
+        $limit = $request->get('limit', 12);
+        $agents = Staff::whereHas("user", function ($query) {
+            $query->whereHas("user_has_role", function ($query) {
+                $query->whereHas("role", function ($query) {
+                    $query->where("role_type", \Constants::ROLE_TYPE_SALE);
+                });
+            });
+        })->orderBy("id", "DESC")->paginate($limit);
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+
+        return view('front.agents', compact('agents', "carousel"));
+    }
+
+
+    public function service(){
+        $cms = Cms::where([
+            "type" => \Constants::CMS_TYPE_PAGE,
+            "blog" => \Constants::CMS_PAGE_BLOG_SERVICE
+        ])->orderBy("id", "desc")->first();
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+
+        return view('front.service', compact("cms", "carousel"));
+    }
+
+    public function companyProfile()
+    {
+        $cms = Cms::where([
+            "type" => \Constants::CMS_TYPE_PAGE,
+            "blog" => \Constants::CMS_PAGE_BLOG_COMPANY_PROFILE
+        ])->orderBy("id", "desc")->first();
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+        return view("front.company-profile", compact("cms", "carousel"));
+    }
+
+    public function contact(){
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+        return view('front.contact', compact("carousel"));
+    }
+
+    public function sendContact(Request $request) {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email',
+            'subject'=> 'required',
+            'message'=> 'required'
+        ]);
+        $config = Config::pluck('data')->first();
+        if(!is_null($config)){
+            $config = json_decode($config);
+        }
+        $data = array(
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'bodyMessage' => $request->message,
+            'to' => $config->email
+        );
+        Mail::send(['html'=>'front.contactmail'], $data, function($message) use ($data){
+           $message->to($data['to'], 'Rxgcrealestate')->subject($data['subject']);
+           $message->from($data['email'], $data['name']);
+       });
+
+      return redirect()->route('contact')->with('success', 'Your email sent success!! We will contact you back shortly.');
+    }
+
+    public function property_detail($id){
+        $property = Property::with([
+            "province_id",
+            "district_id",
+            "commune_id",
+            "village_id",
+            'property_type_id',
+            'attachments'
+        ])
+        ->where('status', \Constants::PROPERTY_STATUS["published"])
+        ->where("state", '=', 1)
+        ->where('id', $id)
+        ->first();
+
+        if(is_null($property)){
+            return view("front.errors.404");
+        }
+        $property = json_decode($property);
+
+        $property_types = PropertyType::with('properties')->get();
+        $relate_properties = Property::where('property_type_id', (int) @$property->property_type_id->id)
+                            ->with(["province_id"])
+                            ->where('id', '!=', $property->id)
+                            ->where('status', \Constants::PROPERTY_STATUS["published"])
+                            ->orderBy('id', 'desc')
+                            ->limit(5)
+                            ->get();
+
+
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+        return view('front.property_detail', compact(
+            'property',
+            'property_types',
+            'relate_properties',
+            'carousel'
+        ));
+    }
+
+    public function agent_detail($id){
+        $agent = Staff::where('id', $id)->first();
+        $other_agents =  Staff::whereHas("user", function ($query) {
+            $query->whereHas("user_has_role", function ($query) {
+                $query->whereHas("role", function ($query) {
+                    $query->where("role_type", \Constants::ROLE_TYPE_SALE);
+                });
+            });
+        })->where('staffs.id', '!=', $id)->orderBy("id", "DESC")->limit(4)->get();
+        //get carousel
+        $carousel = Cms::where(["type" => \Constants::CMS_TYPE_BRAND_CAROUSEL])->orderBy("id", "desc")->get();
+
+        return view('front.agent_detail', compact('agent', 'other_agents', 'carousel'));
+    }
+}

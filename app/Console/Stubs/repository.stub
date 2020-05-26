@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Model\{{domain}};
+
+use App\Model\{{domain}}\{{domain}}Repository;
+use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\Model;
+
+class Db{{domain}}Repository extends Repository implements {{domain}}Repository 
+{
+    public function __construct({{domain}} $model)
+    {
+        $this->model = $model;
+    }   
+}

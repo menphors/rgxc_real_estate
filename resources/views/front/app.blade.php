@@ -57,7 +57,7 @@
     @endif
   </style>
   @yield('style')
-</head> 
+</head>
 <body>
   <div id="preloader"></div>
 
@@ -92,7 +92,7 @@
   <!-- Main Custom JS -->
   <script type="text/javascript" src="{{ asset("js/main.js") }}"></script>
   <script src="{{ asset("backend/js/simple-lightbox.js") }}" type="text/javascript"></script>
-
+  @stack('js')
   @yield('script')
 </body>
 </html>

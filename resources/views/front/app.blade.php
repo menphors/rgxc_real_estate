@@ -18,35 +18,18 @@
   <link rel="dns-prefetch" href="//fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
   <!-- Styles -->
-
-  <link href="{{ asset("css/bootstrap.min.css") }}" rel="stylesheet">
-
-  <!-- Needed CSS -->
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/font-awesome.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/icofont.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/bootstrap-dropdownhover.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/featherlight.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/featherlight.gallery.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/hover.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/flexslider.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/owl.carousel.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/owl.theme.default.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/slick.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/slick-theme.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/jquery-ui.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/animations.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/animate.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/morphext.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/owl.carousel.min.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/owl.theme.default.css") }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/jquery.mb.YTPlayer.min.css") }}">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700,900" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/animate.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/owl.theme.default.css') }}">
 
   <link href="https://fonts.googleapis.com/css?family=Battambang&display=swap" rel="stylesheet">
   <!-- Main stylesheet  -->
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/style.css") }}">
-  <!-- Responsive stylesheet  -->
-  <link rel="stylesheet" type="text/css" href="{{ asset("css/responsive.css") }}">
-  <link href="{{ asset("backend/css/simplelightbox.min.css") }}" rel="stylesheet" type="text/css" />
   @php
     $locale = \Illuminate\Support\Facades\App::getLocale();
   @endphp
@@ -68,30 +51,22 @@
   @include('front.partial._brand_carousel')
   @include('front.partial._footer')
   <!-- jQuery -->
-  <script src="{{ asset("js/jquery.min.js") }}"></script>
-  <!-- Bootstrap Core JavaScript -->
-  <script src="{{ asset("js/bootstrap.min.js") }}"></script>
+  <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
-  <!-- all plugins and JavaScript -->
-  <script type="text/javascript" src="{{ asset("js/css3-animate-it.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/bootstrap-dropdownhover.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/featherlight.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/featherlight.gallery.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jquery.flexslider.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/owl.carousel.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jarallax.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/slick.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jquery-ui.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jquery-scrolltofixed-min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/morphext.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/dyscrollup.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jquery.ripples.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/jquery.mb.YTPlayer.min.js") }}"></script>
-  <script type="text/javascript" src="{{ asset("js/app.js") }}"></script>
+  <!-- Bootstrap -->
+  <script src="{{ asset('assets/js/bootstrap.js') }}"></script>
 
-  <!-- Main Custom JS -->
-  <script type="text/javascript" src="{{ asset("js/main.js") }}"></script>
-  <script src="{{ asset("backend/js/simple-lightbox.js") }}" type="text/javascript"></script>
+  <!-- carousel -->
+  <script src="{{ asset('assets/js/owl.carousel.js') }}"></script>
+
+  <!-- carousel -->
+  <script src="{{ asset('assets/js/slider.js') }}"></script>
+
+  <!-- wow -->
+  <script src="{{ asset('assets/js/wow.min.js') }}"></script>
+
+  <!-- custom -->
+  <script src="{{ asset('assets/js/custom.js') }}"></script>
   @stack('js')
   @yield('script')
 </body>

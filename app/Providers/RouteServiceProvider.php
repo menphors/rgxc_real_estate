@@ -53,8 +53,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware(['web', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'])
-             ->prefix(\LaravelLocalization::setLocale())
+        Route::middleware('web')
              ->namespace($this->namespace)
              ->group(base_path('routes/web.php'));
     }
@@ -77,8 +76,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapAdminRoutes()
     {
 
-        Route::middleware(['web', 'auth', 'administrator','localeSessionRedirect', 'localizationRedirect', 'localeViewPath'])
-             ->prefix(\LaravelLocalization::setLocale().'/administrator')
+        Route::middleware('web')
+             ->prefix('/administrator')
              ->as('administrator.')
              ->namespace($this->adminNamespace)
              ->group(base_path('routes/admin.php'));

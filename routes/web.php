@@ -10,7 +10,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('locale/{locale}', function ($locale){
+    Session::put('locale',$locale);
+    return redirect()->back();
 
+});
 Route::get('administrator', 'AuthController@showLoginForm')->name('administrator');
 Route::post('admin-login', 'AuthController@login')->name("user-login");
 Route::post('admin-logout', 'AuthController@logout')->name("logout");
